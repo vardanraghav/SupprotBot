@@ -215,7 +215,7 @@ const LoginPage = () => {
           <div className="mt-4 text-center text-sm">
             {isLoginView ? "Don't have an account? " : "Already have an account? "}
             <Button variant="link" onClick={() => setIsLoginView(!isLoginView)} className="p-0 h-auto">
-              {isLoginVew ? 'Sign up' : 'Log in'}
+              {isLoginView ? 'Sign up' : 'Log in'}
             </Button>
           </div>
         </CardContent>
