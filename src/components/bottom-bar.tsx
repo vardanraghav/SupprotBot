@@ -1,16 +1,28 @@
 "use client";
 
 import * as React from 'react';
-import { Smile, Book, Wind } from 'lucide-react';
+import { Smile, Book, Wind, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import MoodTracker from './mood-tracker';
 import JournalSection from './journal-section';
 import BreathingExercise from './breathing-exercise';
 import { cn } from '@/lib/utils';
+import { useAppState } from '@/lib/app-context';
 
 export function BottomBar() {
+  const { activePage, setActivePage } = useAppState();
   const [activeSheet, setActiveSheet] = React.useState<string | null>(null);
+
+  const handleToolClick = (toolId: string) => {
+    if (toolId === 'settings') {
+      setActivePage(activePage === 'settings' ? 'chat' : 'settings');
+      setActiveSheet(null);
+    } else {
+      setActivePage('chat');
+      setActiveSheet(toolId);
+    }
+  };
 
   const tools = [
     { id: 'mood', icon: Smile, label: 'Mood', content: <MoodTracker onSave={() => setActiveSheet(null)} /> },
@@ -22,24 +34,39 @@ export function BottomBar() {
     <div className="glassmorphism rounded-t-lg border-t">
       <div className="flex justify-around items-center p-2">
         {tools.map((tool) => (
-          <Sheet key={tool.id} open={activeSheet === tool.id} onOpenChange={(isOpen) => setActiveSheet(isOpen ? tool.id : null)}>
+           <Sheet key={tool.id} open={activeSheet === tool.id} onOpenChange={(isOpen) => setActiveSheet(isOpen ? tool.id : null)}>
             <SheetTrigger asChild>
-              <Button variant="ghost" className={cn(
-                "flex-col h-auto p-2 rounded-lg",
-                activeSheet === tool.id && 'bg-primary/20 text-primary'
-              )}>
+              <Button 
+                variant="ghost" 
+                className={cn(
+                  "flex-col h-auto p-2 rounded-lg",
+                  activeSheet === tool.id && 'bg-primary/20 text-primary'
+                )}
+                onClick={() => handleToolClick(tool.id)}
+              >
                 <tool.icon className="h-6 w-6 mb-1" />
                 <span className="text-xs">{tool.label}</span>
               </Button>
             </SheetTrigger>
-            <SheetContent side="bottom" className="h-full max-h-[90dvh] glassmorphism p-0">
-              <SheetHeader className="p-4 border-b">
-                 <SheetTitle className="text-center">{tool.label}</SheetTitle>
-              </SheetHeader>
-              {tool.content}
-            </SheetContent>
-          </Sheet>
+             <SheetContent side="bottom" className="h-full max-h-[90dvh] glassmorphism p-0">
+               <SheetHeader className="p-4 border-b">
+                  <SheetTitle className="text-center">{tool.label}</SheetTitle>
+               </SheetHeader>
+               {tool.content}
+             </SheetContent>
+           </Sheet>
         ))}
+        <Button 
+            variant="ghost" 
+            className={cn(
+                "flex-col h-auto p-2 rounded-lg",
+                activePage === 'settings' && 'bg-primary/20 text-primary'
+            )}
+            onClick={() => handleToolClick('settings')}
+            >
+            <Settings className="h-6 w-6 mb-1" />
+            <span className="text-xs">Settings</span>
+        </Button>
       </div>
     </div>
   );

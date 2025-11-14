@@ -9,9 +9,10 @@ import { cn } from '@/lib/utils';
 import { AudioPlayer } from '@/components/audio-player';
 import { GuidedAction } from '@/components/guided-action';
 import { ResourcesDialog } from '@/components/resources-dialog';
+import SettingsPage from '@/components/settings-page';
 
 function PageContent() {
-  const { moodHistory } = useAppState();
+  const { moodHistory, activePage, setActivePage } = useAppState();
   
   const getMoodTheme = () => {
     if (moodHistory.length === 0) return 'theme-neutral';
@@ -29,19 +30,25 @@ function PageContent() {
             <Logo className="h-5 w-5 text-primary" />
           </div>
           <h1 className="font-headline text-xl font-semibold text-foreground">
-            SupportBot
+            {activePage === 'chat' ? 'SupportBot' : 'Settings'}
           </h1>
         </div>
         <div className="flex items-center gap-2">
-          <AudioPlayer />
+          {activePage === 'chat' && <AudioPlayer />}
           <ResourcesDialog />
         </div>
       </header>
       <main className="flex-1 flex flex-col overflow-hidden relative">
-        <div className="absolute top-4 right-4 z-10">
-          <GuidedAction />
-        </div>
-        <ChatInterface />
+        {activePage === 'chat' ? (
+          <>
+            <div className="absolute top-4 right-4 z-10">
+              <GuidedAction />
+            </div>
+            <ChatInterface />
+          </>
+        ) : (
+          <SettingsPage />
+        )}
       </main>
       <footer className="sticky bottom-0 z-10">
         <BottomBar />
