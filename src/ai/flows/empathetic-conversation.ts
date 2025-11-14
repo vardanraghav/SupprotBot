@@ -119,9 +119,7 @@ Example style:
 
 Always respond like a compassionate friend.`,
   prompt: `User: {{{userInput}}}`,
-  config: {
-    retries: 3,
-  },
+  retries: 3,
 });
 
 const empatheticConversationFlow = ai.defineFlow(
