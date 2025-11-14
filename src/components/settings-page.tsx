@@ -1,3 +1,4 @@
+
 "use client";
 
 import React from 'react';
@@ -17,7 +18,7 @@ const ProfileSettings = () => {
      <Card className="bg-transparent border-0 shadow-none">
       <CardHeader>
         <CardTitle>My Profile</CardTitle>
-        <CardDescription>This is a public space. No personal data is stored.</CardDescription>
+        <CardDescription>This is a public app. No personal user data is stored.</CardDescription>
       </CardHeader>
       <CardContent className="space-y-6">
          <div className="flex items-center space-x-4">

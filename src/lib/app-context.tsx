@@ -4,7 +4,7 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useCollection } from '@/firebase/firestore/use-collection';
 import { doc, setDoc, addDoc, collection, deleteDoc, serverTimestamp } from 'firebase/firestore';
-import { db } from '@/lib/firebase';
+import { useFirestore } from '@/firebase';
 
 // A temporary, anonymous user ID for the session
 const TEMP_USER_ID = 'local-user';
@@ -78,10 +78,11 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
   ]);
   
   const [sosEnabled, setSosEnabled] = useState(true);
+  const firestore = useFirestore();
 
-  const moodCollectionRef = collection(db, 'users', TEMP_USER_ID, 'moodEntries');
-  const journalCollectionRef = collection(db, 'users', TEMP_USER_ID, 'journalEntries');
-  const contactsCollectionRef = collection(db, 'users', TEMP_USER_ID, 'emergencyContacts');
+  const moodCollectionRef = collection(firestore, 'users', TEMP_USER_ID, 'moodEntries');
+  const journalCollectionRef = collection(firestore, 'users', TEMP_USER_ID, 'journalEntries');
+  const contactsCollectionRef = collection(firestore, 'users', TEMP_USER_ID, 'emergencyContacts');
 
   const { data: moodHistory = [], setData: setMoodHistory } = useCollection<MoodEntry>(moodCollectionRef);
   const { data: journalEntries = [], setData: setJournalEntries } = useCollection<JournalEntry>(journalCollectionRef);
@@ -116,7 +117,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
   };
 
   const removeEmergencyContact = (contactId: string) => {
-    const docRef = doc(db, 'users', TEMP_USER_ID, 'emergencyContacts', contactId);
+    const docRef = doc(firestore, 'users', TEMP_USER_ID, 'emergencyContacts', contactId);
     deleteDoc(docRef);
   }
   
@@ -159,9 +160,15 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
         setIsClient(true);
     }, []);
 
+    // Render children only on the client-side to avoid hydration errors
+    // with Firestore data fetching.
+    if (!isClient) {
+      return null;
+    }
+
     return (
         <AppStateProvider>
-            {isClient ? children : null}
+            {children}
         </AppStateProvider>
     )
 }
