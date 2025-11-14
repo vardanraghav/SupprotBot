@@ -1,4 +1,3 @@
-
 {
   "keywords": [
     { "term": "kill myself", "severity": 3 },
@@ -6,12 +5,20 @@
     { "term": "suicide", "severity": 3 },
     { "term": "want to die", "severity": 3 },
     { "term": "kms", "severity": 3 },
+    { "term": "i'm done", "severity": 2 },
+    { "term": "want to disappear", "severity": 2 },
     { "term": "self-harm", "severity": 2 },
     { "term": "hurting myself", "severity": 2 },
     { "term": "cut myself", "severity": 2 },
     { "term": "hopeless", "severity": 1 },
     { "term": "worthless", "severity": 1 },
     { "term": "no reason to live", "severity": 2 },
-    { "term": "can't go on", "severity": 2 }
+    { "term": "can't go on", "severity": 2 },
+    { "term": "can't breathe", "severity": 2 },
+    { "term": "collapsing", "severity": 3 },
+    { "term": "blackout", "severity": 3 },
+    { "term": "faint", "severity": 2 },
+    { "term": "chest pain", "severity": 2 },
+    { "term": "heart racing", "severity": 1 }
   ]
 }

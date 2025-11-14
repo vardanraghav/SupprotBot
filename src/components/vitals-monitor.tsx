@@ -102,12 +102,12 @@ export function VitalsMonitor() {
         const newHr = prev.heartRate + (Math.random() - 0.5) * 4;
         const newSpo2 = prev.spo2 + (Math.random() - 0.45) * 0.5;
         
-        // Occasionally trigger an alert for demonstration
-        if (Math.random() < 0.02) {
+        // Make alerts less frequent to avoid being too intrusive
+        if (Math.random() < 0.005) {
             triggerAlert("High heart rate detected (panic attack risk).");
             return { ...prev, heartRate: HR_PANIC_THRESHOLD + 10 };
         }
-        if (Math.random() < 0.01) {
+        if (Math.random() < 0.002) {
              triggerAlert("Low SpO2 detected (faint / collapse risk).");
             return { ...prev, spo2: SPO2_LOW_THRESHOLD - 5 };
         }

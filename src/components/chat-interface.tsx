@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Paperclip, SendHorizontal } from 'lucide-react';
+import { Paperclip, SendHorizontal, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useAppState, Message } from '@/lib/app-context';
@@ -13,29 +13,35 @@ import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
 import { ContextChips } from './context-chips';
 
-const CrisisMessage = () => (
+const CRISIS_OBSERVATION_MINUTES = 10;
+
+const CrisisMessage = ({ onSendSOS }: { onSendSOS: () => void }) => (
     <div className="rounded-lg border-2 border-destructive bg-destructive/10 p-4 text-destructive-foreground">
-      <h3 className="font-bold">It sounds like you're going through a lot.</h3>
+      <h3 className="font-bold flex items-center gap-2"><AlertTriangle /> Acknowledging Your Pain</h3>
       <p className="text-sm mt-2">
-        If you are in immediate distress, please reach out for help. You are not alone.
+        I’m here with you. It's incredibly brave of you to share this. Please know you are not alone. If you need immediate help, I can alert your emergency contacts for you.
       </p>
-      <div className="mt-4 text-sm">
-        <p><strong>Emergency Helpline (India):</strong> 988</p>
-        <p><strong>Global Crisis Text Line:</strong> Text "HOME" to 741741</p>
+      <p className="text-sm mt-2">
+        <strong>Are you in a safe place right now?</strong>
+      </p>
+      <div className="mt-4 flex gap-2">
+        <Button variant="destructive" onClick={onSendSOS}>Alert Contacts Now</Button>
       </div>
       <p className="text-xs mt-3">
-        I am an AI and not equipped to handle a crisis, but these resources can help.
+        I am an AI and not equipped to handle a crisis, but I want to make sure you get the help you need. If you don't respond, I will automatically alert your contacts to be safe.
       </p>
     </div>
-  );
-
+);
 
 const ChatInterface = () => {
-  const { messages, addMessage, moodHistory, setMessages } = useAppState();
+  const { messages, addMessage, moodHistory, setMessages, emergencyContacts } = useAppState();
   const [input, setInput] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
+
+  const [crisisFlowActive, setCrisisFlowActive] = useState(false);
+  const crisisTimerRef = useRef<NodeJS.Timeout | null>(null);
 
   const scrollToBottom = () => {
     if (scrollAreaRef.current) {
@@ -49,16 +55,71 @@ const ChatInterface = () => {
   useEffect(() => {
     scrollToBottom();
   }, [messages]);
+  
+  const cancelCrisisFlow = () => {
+    if (crisisTimerRef.current) {
+      clearTimeout(crisisTimerRef.current);
+      crisisTimerRef.current = null;
+    }
+    setCrisisFlowActive(false);
+    console.log("Crisis flow cancelled due to user interaction.");
+  };
+
+  useEffect(() => {
+    return () => {
+      if (crisisTimerRef.current) {
+        clearTimeout(crisisTimerRef.current);
+      }
+    };
+  }, []);
+
+  const triggerSOS = (reason: string) => {
+    console.log("SOS TRIGGERED:", reason);
+    if (emergencyContacts.length === 0) {
+      toast({
+        variant: 'destructive',
+        title: "SOS Failed: No Contacts",
+        description: "Please add emergency contacts in settings to use the SOS feature.",
+      });
+      return;
+    }
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const { latitude, longitude } = position.coords;
+        const locationString = `Live location: https://www.google.com/maps?q=${latitude},${longitude}`;
+        toast({
+          variant: 'destructive',
+          title: "SOS ALERT TRIGGERED",
+          description: `Notifying emergency contacts. ${locationString}. Reason: ${reason}`,
+          duration: 10000,
+        });
+      },
+      () => {
+        toast({
+          variant: 'destructive',
+          title: "SOS ALERT TRIGGERED",
+          description: `Notifying emergency contacts. (Location permission denied). Reason: ${reason}`,
+          duration: 10000,
+        });
+      }
+    );
+     cancelCrisisFlow();
+  };
 
   const checkForCrisis = (text: string): boolean => {
     const lowercasedText = text.toLowerCase();
     return crisisKeywords.keywords.some(keyword => lowercasedText.includes(keyword.term));
   };
-
+  
   const handleSendMessage = async (e: React.FormEvent | React.MouseEvent<HTMLButtonElement>, content?: string) => {
     e.preventDefault();
     const messageContent = content || input;
     if (!messageContent.trim() || isLoading) return;
+
+    if (crisisFlowActive) {
+      cancelCrisisFlow();
+    }
 
     addMessage({ role: 'user', content: messageContent });
     setInput('');
@@ -66,10 +127,14 @@ const ChatInterface = () => {
     setTimeout(scrollToBottom, 100);
 
     if (checkForCrisis(messageContent)) {
-      setTimeout(() => {
-        setMessages(prev => [...prev, {id: Date.now().toString(), role: 'system', content: ''}]);
-        setIsLoading(false);
-      }, 1000);
+      setMessages(prev => [...prev, {id: Date.now().toString(), role: 'system', content: ''}]);
+      setIsLoading(false);
+      setCrisisFlowActive(true);
+      
+      console.log(`Crisis detected. Starting ${CRISIS_OBSERVATION_MINUTES}-minute observation window.`);
+      crisisTimerRef.current = setTimeout(() => {
+        triggerSOS(`No response detected for ${CRISIS_OBSERVATION_MINUTES} minutes. Safety alert triggered automatically.`);
+      }, CRISIS_OBSERVATION_MINUTES * 60 * 1000);
       return;
     }
 
@@ -122,7 +187,7 @@ const ChatInterface = () => {
         <div className="px-4 space-y-6 pb-4">
           {messages.map((msg, index) =>
             msg.role === 'system' ? (
-              <CrisisMessage key={index} />
+              <CrisisMessage key={index} onSendSOS={() => triggerSOS('User requested help.')}/>
             ) : (
               <ChatMessage key={msg.id} message={msg} />
             )
