@@ -5,16 +5,17 @@ import { useRouter } from 'next/navigation';
 import ChatInterface from '@/components/chat-interface';
 import { Logo } from '@/components/icons/logo';
 import { BottomBar } from '@/components/bottom-bar';
-import { AppStateProvider, useAppState } from '@/lib/app-context';
+import { useAppState } from '@/lib/app-context';
 import { AudioPlayer } from '@/components/audio-player';
 import { GuidedAction } from '@/components/guided-action';
 import { ResourcesDialog } from '@/components/resources-dialog';
 import SettingsPage from '@/components/settings-page';
-import { useUser } from '@/firebase';
+import { useUser } from '@/firebase/auth/use-user';
 import { Skeleton } from '@/components/ui/skeleton';
 import { Button } from '@/components/ui/button';
 import { LogOut } from 'lucide-react';
-import { getAuth, signOut } from 'firebase/auth';
+import { signOut } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 
 function AuthWrapper({ children }: { children: React.ReactNode }) {
   const { user, loading, error } = useUser();
@@ -57,8 +58,6 @@ function AuthWrapper({ children }: { children: React.ReactNode }) {
 
 function PageContent() {
   const { moodHistory, activePage } = useAppState();
-  const { user } = useUser();
-  const auth = getAuth();
   const router = useRouter();
 
   const handleLogout = async () => {
@@ -121,9 +120,7 @@ function PageContent() {
 export default function Home() {
   return (
     <AuthWrapper>
-      <AppStateProvider>
-        <PageContent />
-      </AppStateProvider>
+      <PageContent />
     </AuthWrapper>
   );
 }

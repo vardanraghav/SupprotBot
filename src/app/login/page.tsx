@@ -6,11 +6,10 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
-import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
-import { useFirebaseApp } from '@/firebase';
+import { createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { auth } from '@/lib/firebase';
 import { useRouter } from 'next/navigation';
 import { Logo } from '@/components/icons/logo';
 import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
@@ -55,8 +54,6 @@ const getFirebaseErrorMessage = (error: any) => {
 const LoginPage = () => {
   const [isLoginView, setIsLoginView] = useState(true);
   const { toast } = useToast();
-  const app = useFirebaseApp();
-  const auth = getAuth(app);
   const router = useRouter();
 
   const loginForm = useForm<LoginValues>({
@@ -138,7 +135,7 @@ const LoginPage = () => {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="admin@supportbot.app" {...field} className="bg-background/50" />
+                        <Input placeholder="your@email.com" {...field} className="bg-background/50" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>

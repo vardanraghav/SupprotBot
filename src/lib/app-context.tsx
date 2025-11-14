@@ -3,6 +3,7 @@
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
 import { useUser, useCollection, useDoc } from '@/firebase';
 import { doc, setDoc, addDoc, collection, deleteDoc } from 'firebase/firestore';
+import { db } from '@/lib/firebase';
 import { useFirestore } from '@/firebase';
 
 // Types
@@ -73,7 +74,6 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
   ]);
   
   const { user } = useUser();
-  const firestore = useFirestore();
   const [isAdmin, setIsAdmin] = useState(false);
 
   useEffect(() => {
@@ -87,13 +87,13 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 
   // Firestore-backed state
   const { data: moodHistory = [], setData: setMoodHistory } = useCollection<MoodEntry>(
-    user ? collection(firestore, 'users', user.uid, 'moodEntries') : null
+    user ? collection(db, 'users', user.uid, 'moodEntries') : null
   );
   const { data: journalEntries = [], setData: setJournalEntries } = useCollection<JournalEntry>(
-    user ? collection(firestore, 'users', user.uid, 'journalEntries') : null
+    user ? collection(db, 'users', user.uid, 'journalEntries') : null
   );
   const { data: emergencyContacts = [], setData: setEmergencyContacts } = useCollection<EmergencyContact>(
-    user ? collection(firestore, 'users', user.uid, 'emergencyContacts') : null
+    user ? collection(db, 'users', user.uid, 'emergencyContacts') : null
   );
   
   const [activePage, setActivePage] = useState<Page>('chat');
@@ -110,7 +110,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
       ...entry, 
       date: new Date().toISOString() 
     };
-    const collectionRef = collection(firestore, 'users', user.uid, 'moodEntries');
+    const collectionRef = collection(db, 'users', user.uid, 'moodEntries');
     addDoc(collectionRef, newEntry);
   };
 
@@ -120,19 +120,19 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
       ...entry, 
       date: new Date().toISOString() 
     };
-    const collectionRef = collection(firestore, 'users', user.uid, 'journalEntries');
+    const collectionRef = collection(db, 'users', user.uid, 'journalEntries');
     addDoc(collectionRef, newEntry);
   };
 
   const addEmergencyContact = (contact: Omit<EmergencyContact, 'id'>) => {
     if (!user) return;
-    const collectionRef = collection(firestore, 'users', user.uid, 'emergencyContacts');
+    const collectionRef = collection(db, 'users', user.uid, 'emergencyContacts');
     addDoc(collectionRef, contact);
   };
 
   const removeEmergencyContact = (contactId: string) => {
     if (!user) return;
-    const docRef = doc(firestore, 'users', user.uid, 'emergencyContacts', contactId);
+    const docRef = doc(db, 'users', user.uid, 'emergencyContacts', contactId);
     deleteDoc(docRef);
   }
   
