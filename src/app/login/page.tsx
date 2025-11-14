@@ -72,7 +72,7 @@ const LoginPage = () => {
       const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
       const user = userCredential.user;
 
-      if (user.email === 'admin@supportbot.app' && data.password === '7983977176') {
+      if (user.email === 'raghavvardan123@gmail.com' && data.password === '7983977176') {
         toast({ title: 'Admin Login Successful', description: 'Welcome, Admin!' });
         router.push('/admin');
       } else {
