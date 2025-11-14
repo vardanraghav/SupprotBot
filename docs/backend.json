@@ -90,6 +90,51 @@
             }
         },
         "required": ["name", "relationship", "phone"]
+    },
+    "CollaborationChannel": {
+      "title": "Collaboration Channel",
+      "description": "Represents a real-time collaboration channel for a team.",
+      "type": "object",
+      "properties": {
+        "channelName": {
+          "type": "string",
+          "description": "The name of the collaboration channel."
+        },
+        "createdAt": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the channel was created."
+        },
+        "members": {
+          "type": "array",
+          "items": {
+            "type": "string"
+          },
+          "description": "An array of user IDs who are members of this channel."
+        }
+      },
+      "required": ["channelName", "createdAt"]
+    },
+    "ChannelMessage": {
+      "title": "Channel Message",
+      "description": "A single message within a collaboration channel.",
+      "type": "object",
+      "properties": {
+        "userId": {
+          "type": "string",
+          "description": "The ID of the user who sent the message."
+        },
+        "message": {
+          "type": "string",
+          "description": "The content of the message."
+        },
+        "timestamp": {
+          "type": "string",
+          "format": "date-time",
+          "description": "The timestamp when the message was sent."
+        }
+      },
+      "required": ["userId", "message", "timestamp"]
     }
   },
   "firestore": {
@@ -108,6 +153,14 @@
     "/users/{userId}/emergencyContacts/{contactId}": {
         "schema": { "$ref": "#/entities/EmergencyContact" },
         "description": "Stores a user's emergency contacts."
+    },
+    "/collaborationChannels/{channelId}": {
+      "schema": { "$ref": "#/entities/CollaborationChannel" },
+      "description": "Stores information about team collaboration channels."
+    },
+    "/collaborationChannels/{channelId}/messages/{messageId}": {
+      "schema": { "$ref": "#/entities/ChannelMessage" },
+      "description": "Stores messages for a specific collaboration channel."
     }
   }
 }

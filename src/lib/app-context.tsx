@@ -54,7 +54,6 @@ interface AppState {
   setEmergencyContacts: React.Dispatch<React.SetStateAction<EmergencyContact[]>>;
   activePage: Page;
   setActivePage: React.Dispatch<React.SetStateAction<Page>>;
-  isAdmin: boolean;
   sosEnabled: boolean;
   setSosEnabled: React.Dispatch<React.SetStateAction<boolean>>;
   addMessage: (message: Omit<Message, 'id'>) => Message;
@@ -78,7 +77,6 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
     }
   ]);
   
-  const [isAdmin, setIsAdmin] = useState(false);
   const [sosEnabled, setSosEnabled] = useState(true);
 
   const moodCollectionRef = collection(db, 'users', TEMP_USER_ID, 'moodEntries');
@@ -139,7 +137,6 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
     setEmergencyContacts: setEmergencyContacts as React.Dispatch<React.SetStateAction<EmergencyContact[]>>,
     activePage,
     setActivePage,
-    isAdmin,
     sosEnabled,
     setSosEnabled,
     addMessage,
