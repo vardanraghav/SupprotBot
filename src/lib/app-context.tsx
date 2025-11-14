@@ -1,6 +1,9 @@
 "use client";
 
-import React, { createContext, useContext, useState, ReactNode } from 'react';
+import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
+import { useUser, useCollection, useDoc } from '@/firebase';
+import { doc, setDoc, addDoc, collection, deleteDoc } from 'firebase/firestore';
+import { useFirestore } from '@/firebase';
 
 // Types
 export interface Message {
@@ -67,9 +70,21 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
       content: "I'm SupportBot, and I'm here with you. It's a safe space to share what's on your mind. How are you feeling today?",
     }
   ]);
-  const [moodHistory, setMoodHistory] = useState<MoodEntry[]>([]);
-  const [journalEntries, setJournalEntries] = useState<JournalEntry[]>([]);
-  const [emergencyContacts, setEmergencyContacts] = useState<EmergencyContact[]>([]);
+  
+  const { user } = useUser();
+  const firestore = useFirestore();
+
+  // Firestore-backed state
+  const { data: moodHistory = [], setData: setMoodHistory } = useCollection<MoodEntry>(
+    user ? collection(firestore, 'users', user.uid, 'moodEntries') : null
+  );
+  const { data: journalEntries = [], setData: setJournalEntries } = useCollection<JournalEntry>(
+    user ? collection(firestore, 'users', user.uid, 'journalEntries') : null
+  );
+  const { data: emergencyContacts = [], setData: setEmergencyContacts } = useCollection<EmergencyContact>(
+    user ? collection(firestore, 'users', user.uid, 'emergencyContacts') : null
+  );
+  
   const [activePage, setActivePage] = useState<Page>('chat');
 
   const addMessage = (message: Omit<Message, 'id'>): Message => {
@@ -79,30 +94,35 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
   };
   
   const addMoodEntry = (entry: Omit<MoodEntry, 'id' | 'date'>) => {
+    if (!user) return;
     const newEntry = { 
       ...entry, 
-      id: Date.now().toString(), 
       date: new Date().toISOString() 
     };
-    setMoodHistory(prev => [...prev, newEntry]);
+    const collectionRef = collection(firestore, 'users', user.uid, 'moodEntries');
+    addDoc(collectionRef, newEntry);
   };
 
   const addJournalEntry = (entry: Omit<JournalEntry, 'id' | 'date'>) => {
+     if (!user) return;
     const newEntry = { 
       ...entry, 
-      id: Date.now().toString(), 
       date: new Date().toISOString() 
     };
-    setJournalEntries(prev => [...prev, newEntry]);
+    const collectionRef = collection(firestore, 'users', user.uid, 'journalEntries');
+    addDoc(collectionRef, newEntry);
   };
 
   const addEmergencyContact = (contact: Omit<EmergencyContact, 'id'>) => {
-    const newContact = { ...contact, id: Date.now().toString() };
-    setEmergencyContacts(prev => [...prev, newContact]);
+    if (!user) return;
+    const collectionRef = collection(firestore, 'users', user.uid, 'emergencyContacts');
+    addDoc(collectionRef, contact);
   };
 
   const removeEmergencyContact = (contactId: string) => {
-    setEmergencyContacts(prev => prev.filter(c => c.id !== contactId));
+    if (!user) return;
+    const docRef = doc(firestore, 'users', user.uid, 'emergencyContacts', contactId);
+    deleteDoc(docRef);
   }
   
   const setFeedback = (messageId: string, isHelpful: boolean) => {
@@ -110,16 +130,16 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
       msg.id === messageId ? { ...msg, isHelpful } : msg
     ));
   };
-
-  const value = {
+  
+  const value: AppState = {
     messages,
     setMessages,
-    moodHistory,
-    setMoodHistory,
-    journalEntries,
-    setJournalEntries,
-    emergencyContacts,
-    setEmergencyContacts,
+    moodHistory: moodHistory as MoodEntry[],
+    setMoodHistory: setMoodHistory as React.Dispatch<React.SetStateAction<MoodEntry[]>>,
+    journalEntries: journalEntries as JournalEntry[],
+    setJournalEntries: setJournalEntries as React.Dispatch<React.SetStateAction<JournalEntry[]>>,
+    emergencyContacts: emergencyContacts as EmergencyContact[],
+    setEmergencyContacts: setEmergencyContacts as React.Dispatch<React.SetStateAction<EmergencyContact[]>>,
     activePage,
     setActivePage,
     addMessage,

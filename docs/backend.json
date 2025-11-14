@@ -1,0 +1,116 @@
+{
+  "entities": {
+    "UserProfile": {
+      "title": "User Profile",
+      "description": "Represents a user's profile information.",
+      "type": "object",
+      "properties": {
+        "name": {
+          "type": "string",
+          "description": "The user's full name."
+        },
+        "email": {
+          "type": "string",
+          "format": "email",
+          "description": "The user's email address."
+        },
+        "phone": {
+            "type": "string",
+            "description": "The user's phone number."
+        }
+      },
+      "required": ["name", "email"]
+    },
+    "MoodEntry": {
+        "title": "Mood Entry",
+        "description": "A single mood entry for a user.",
+        "type": "object",
+        "properties": {
+            "date": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The date of the mood entry."
+            },
+            "moodScore": {
+                "type": "number",
+                "description": "The mood score from 1 to 10."
+            },
+            "tags": {
+                "type": "array",
+                "items": {
+                    "type": "string"
+                },
+                "description": "Tags associated with the mood entry."
+            },
+            "notes": {
+                "type": "string",
+                "description": "Optional notes for the mood entry."
+            }
+        },
+        "required": ["date", "moodScore"]
+    },
+    "JournalEntry": {
+        "title": "Journal Entry",
+        "description": "A single journal entry for a user.",
+        "type": "object",
+        "properties": {
+            "date": {
+                "type": "string",
+                "format": "date-time",
+                "description": "The date of the journal entry."
+            },
+            "content": {
+                "type": "string",
+                "description": "The content of the journal entry."
+            }
+        },
+        "required": ["date", "content"]
+    },
+    "EmergencyContact": {
+        "title": "Emergency Contact",
+        "description": "An emergency contact for a user.",
+        "type": "object",
+        "properties": {
+            "name": {
+                "type": "string",
+                "description": "The name of the contact."
+            },
+            "relationship": {
+                "type": "string",
+                "description": "The relationship to the user."
+            },
+            "phone": {
+                "type": "string",
+                "description": "The phone number of the contact."
+            },
+            "email": {
+                "type": "string",
+                "format": "email",
+                "description": "The email of the contact."
+            }
+        },
+        "required": ["name", "relationship", "phone"]
+    }
+  },
+  "auth": {
+    "providers": ["password"]
+  },
+  "firestore": {
+    "/users/{userId}": {
+      "schema": { "$ref": "#/entities/UserProfile" },
+      "description": "Stores user profile information."
+    },
+    "/users/{userId}/moodEntries/{entryId}": {
+        "schema": { "$ref": "#/entities/MoodEntry" },
+        "description": "Stores a user's mood entries."
+    },
+    "/users/{userId}/journalEntries/{entryId}": {
+        "schema": { "$ref": "#/entities/JournalEntry" },
+        "description": "Stores a user's journal entries."
+    },
+    "/users/{userId}/emergencyContacts/{contactId}": {
+        "schema": { "$ref": "#/entities/EmergencyContact" },
+        "description": "Stores a user's emergency contacts."
+    }
+  }
+}
