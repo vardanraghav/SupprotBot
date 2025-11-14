@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, FirebaseError } from 'firebase/auth';
 import { useFirebaseApp } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { Logo } from '@/components/icons/logo';
@@ -27,6 +27,26 @@ const registerSchema = z.object({
 
 type LoginValues = z.infer<typeof loginSchema>;
 type RegisterValues = z.infer<typeof registerSchema>;
+
+const getFirebaseErrorMessage = (error: any) => {
+    if (error instanceof FirebaseError) {
+        switch (error.code) {
+            case 'auth/user-not-found':
+                return 'No account found with this email address.';
+            case 'auth/wrong-password':
+                return 'Incorrect password. Please try again.';
+            case 'auth/email-already-in-use':
+                return 'This email is already registered. Please log in.';
+            case 'auth/weak-password':
+                return 'The password is too weak. Please use at least 6 characters.';
+            case 'auth/invalid-email':
+                return 'Please enter a valid email address.';
+            default:
+                return error.message;
+        }
+    }
+    return 'An unknown error occurred.';
+}
 
 const LoginPage = () => {
   const [isLoginView, setIsLoginView] = useState(true);
@@ -49,10 +69,11 @@ const LoginPage = () => {
       toast({ title: 'Login Successful', description: 'Welcome back!' });
       router.push('/');
     } catch (error: any) {
+      console.error("Login error:", error.code, error.message);
       toast({
         variant: 'destructive',
         title: 'Login Failed',
-        description: error.message || 'An unknown error occurred.',
+        description: getFirebaseErrorMessage(error),
       });
     }
   };
@@ -64,10 +85,11 @@ const LoginPage = () => {
       toast({ title: 'Registration Successful', description: 'Welcome to SupportBot!' });
       router.push('/');
     } catch (error: any) {
+      console.error("Signup error:", error.code, error.message);
       toast({
         variant: 'destructive',
         title: 'Registration Failed',
-        description: error.message || 'An unknown error occurred.',
+        description: getFirebaseErrorMessage(error),
       });
     }
   };

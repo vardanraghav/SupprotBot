@@ -50,6 +50,7 @@ interface AppState {
   setEmergencyContacts: React.Dispatch<React.SetStateAction<EmergencyContact[]>>;
   activePage: Page;
   setActivePage: React.Dispatch<React.SetStateAction<Page>>;
+  isAdmin: boolean;
   addMessage: (message: Omit<Message, 'id'>) => Message;
   addMoodEntry: (entry: Omit<MoodEntry, 'id' | 'date'>) => void;
   addJournalEntry: (entry: Omit<JournalEntry, 'id' | 'date'>) => void;
@@ -73,6 +74,16 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
   
   const { user } = useUser();
   const firestore = useFirestore();
+  const [isAdmin, setIsAdmin] = useState(false);
+
+  useEffect(() => {
+    if (user && user.email === 'raghavvardan123@gmail.com') {
+      setIsAdmin(true);
+      console.log("Admin logged in");
+    } else {
+      setIsAdmin(false);
+    }
+  }, [user]);
 
   // Firestore-backed state
   const { data: moodHistory = [], setData: setMoodHistory } = useCollection<MoodEntry>(
@@ -142,6 +153,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
     setEmergencyContacts: setEmergencyContacts as React.Dispatch<React.SetStateAction<EmergencyContact[]>>,
     activePage,
     setActivePage,
+    isAdmin,
     addMessage,
     addMoodEntry,
     addJournalEntry,
