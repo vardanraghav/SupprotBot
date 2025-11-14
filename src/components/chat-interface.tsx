@@ -11,6 +11,7 @@ import ChatMessage from './chat-message';
 import { ScrollArea } from './ui/scroll-area';
 import { useToast } from "@/hooks/use-toast";
 import { cn } from '@/lib/utils';
+import { ContextChips } from './context-chips';
 
 const CrisisMessage = () => (
     <div className="rounded-lg border-2 border-destructive bg-destructive/10 p-4 text-destructive-foreground">
@@ -54,17 +55,17 @@ const ChatInterface = () => {
     return crisisKeywords.keywords.some(keyword => lowercasedText.includes(keyword.term));
   };
 
-  const handleSendMessage = async (e: React.FormEvent) => {
+  const handleSendMessage = async (e: React.FormEvent | React.MouseEvent<HTMLButtonElement>, content?: string) => {
     e.preventDefault();
-    if (!input.trim() || isLoading) return;
+    const messageContent = content || input;
+    if (!messageContent.trim() || isLoading) return;
 
-    addMessage({ role: 'user', content: input });
-    const currentInput = input;
+    addMessage({ role: 'user', content: messageContent });
     setInput('');
     setIsLoading(true);
     setTimeout(scrollToBottom, 100);
 
-    if (checkForCrisis(currentInput)) {
+    if (checkForCrisis(messageContent)) {
       setTimeout(() => {
         setMessages(prev => [...prev, {id: Date.now().toString(), role: 'system', content: ''}]);
         setIsLoading(false);
@@ -76,7 +77,7 @@ const ChatInterface = () => {
       const lastMood = moodHistory.length > 0 ? moodHistory[moodHistory.length - 1] : undefined;
       
       const aiResponse = await empatheticConversation({
-        userInput: currentInput,
+        userInput: messageContent,
         moodScore: lastMood?.moodScore,
         moodTags: lastMood?.tags,
         moodNotes: lastMood?.notes,
@@ -111,6 +112,10 @@ const ChatInterface = () => {
     }
   };
 
+  const handleChipClick = (chipText: string) => {
+    setInput(chipText);
+  }
+
   return (
     <div className="flex flex-col h-full w-full max-w-3xl mx-auto px-4 pt-4">
       <ScrollArea className="flex-1 -mx-4" ref={scrollAreaRef}>
@@ -127,7 +132,8 @@ const ChatInterface = () => {
       </ScrollArea>
 
       <div className="pb-4 mt-auto">
-        <form onSubmit={handleSendMessage} className="relative mt-4">
+        <ContextChips onChipClick={handleChipClick} />
+        <form onSubmit={handleSendMessage} className="relative mt-2">
           <Textarea
             value={input}
             onChange={(e) => setInput(e.target.value)}

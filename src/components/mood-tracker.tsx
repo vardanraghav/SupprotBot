@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { Slider } from "@/components/ui/slider";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -11,12 +11,65 @@ import { useToast } from "@/hooks/use-toast";
 import { getMoodInsights } from '@/ai/flows/mood-insights';
 import { suggestTags } from '@/ai/flows/tagging-autobucket';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
-import { BrainCircuit, X, Smile, Meh, Frown } from 'lucide-react';
+import { BrainCircuit, X, Smile, Meh, Frown, Sparkles } from 'lucide-react';
+import { empatheticConversation } from '@/ai/flows/empathetic-conversation';
+import { Skeleton } from './ui/skeleton';
 
 const MoodEmoji = ({ mood }: { mood: number }) => {
   if (mood > 7) return <Smile className="h-6 w-6 text-green-400" />;
   if (mood > 4) return <Meh className="h-6 w-6 text-yellow-400" />;
   return <Frown className="h-6 w-6 text-red-400" />;
+}
+
+const MoodReflectionCard = ({ moodEntry, onClose }: { moodEntry: any, onClose: () => void }) => {
+  const [reflection, setReflection] = useState('');
+  const [isLoading, setIsLoading] = useState(true);
+
+  useEffect(() => {
+    const generateReflection = async () => {
+      setIsLoading(true);
+      try {
+        const response = await empatheticConversation({
+          userInput: "I just logged my mood.",
+          moodScore: moodEntry.moodScore,
+          moodTags: moodEntry.tags,
+          moodNotes: moodEntry.notes
+        });
+        setReflection(response.response);
+      } catch (error) {
+        console.error("Failed to generate mood reflection:", error);
+        setReflection("Remember to be kind to yourself. Every feeling is valid.");
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    generateReflection();
+  }, [moodEntry]);
+
+  return (
+    <Card className="glassmorphism border-primary/50">
+      <CardHeader>
+        <CardTitle className="flex items-center gap-2">
+          <Sparkles className="text-primary" />
+          <span>A Moment of Reflection</span>
+        </CardTitle>
+        <CardDescription>I noticed you're feeling {moodEntry.moodScore}/10 today.</CardDescription>
+      </CardHeader>
+      <CardContent>
+        {isLoading ? (
+          <div className="space-y-2">
+            <Skeleton className="h-4 w-full" />
+            <Skeleton className="h-4 w-5/6" />
+          </div>
+        ) : (
+          <p className="text-sm">{reflection}</p>
+        )}
+      </CardContent>
+      <CardFooter>
+        <Button className="w-full" onClick={onClose}>Continue</Button>
+      </CardFooter>
+    </Card>
+  )
 }
 
 const MoodTracker = ({ onSave }: { onSave?: () => void }) => {
@@ -28,6 +81,7 @@ const MoodTracker = ({ onSave }: { onSave?: () => void }) => {
   const [insights, setInsights] = useState<{ averageMood: number; frequentTriggers: string[]; notableIncidents: string[]; } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [showInsights, setShowInsights] = useState(false);
+  const [lastMoodEntry, setLastMoodEntry] = useState<any | null>(null);
 
   const { toast } = useToast();
 
@@ -35,7 +89,7 @@ const MoodTracker = ({ onSave }: { onSave?: () => void }) => {
     if (e.key === 'Enter' && currentTag) {
       e.preventDefault();
       if (!tags.includes(currentTag)) {
-        setTags([...tags, currentTag]);
+        setTags([...tags, currentTag.trim()]);
       }
       setCurrentTag('');
     }
@@ -64,15 +118,17 @@ const MoodTracker = ({ onSave }: { onSave?: () => void }) => {
   }
 
   const handleSubmit = () => {
-    addMoodEntry({ moodScore: mood, tags, notes });
+    const newEntry = { moodScore: mood, tags, notes };
+    addMoodEntry(newEntry);
+    setLastMoodEntry(newEntry);
     toast({
       title: "Mood logged",
       description: "Your mood has been saved for today.",
     });
+    // Reset form for next time
     setMood(5);
     setTags([]);
     setNotes('');
-    if (onSave) onSave();
   };
 
   const handleGetInsights = async () => {
@@ -93,29 +149,44 @@ const MoodTracker = ({ onSave }: { onSave?: () => void }) => {
       setIsLoading(false);
     }
   };
+
+  const handleCloseReflection = () => {
+    setLastMoodEntry(null);
+    if (onSave) onSave();
+  }
+  
+  if(lastMoodEntry) {
+    return (
+       <div className="p-4">
+        <MoodReflectionCard moodEntry={lastMoodEntry} onClose={handleCloseReflection} />
+       </div>
+    );
+  }
   
   if (showInsights && insights) {
      return (
-       <Card className="glassmorphism border-none shadow-none">
-        <CardHeader>
-          <CardTitle>Weekly Insights</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <div className="space-y-3 text-sm">
-              <p><strong>Average Mood:</strong> {insights.averageMood.toFixed(1)}/10</p>
-              <p><strong>Frequent Triggers:</strong> {insights.frequentTriggers.join(', ')}</p>
-              <div>
-                <strong>Notable Incidents:</strong>
-                <ul className="list-disc pl-5 mt-1 space-y-1">
-                  {insights.notableIncidents.map((note, i) => <li key={i}>{note}</li>)}
-                </ul>
-              </div>
-          </div>
-        </CardContent>
-        <CardFooter>
-          <Button variant="outline" className="w-full" onClick={() => setShowInsights(false)}>Back to Logging</Button>
-        </CardFooter>
-      </Card>
+       <div className="p-4">
+        <Card className="glassmorphism border-none shadow-none">
+          <CardHeader>
+            <CardTitle>Weekly Insights</CardTitle>
+          </CardHeader>
+          <CardContent>
+            <div className="space-y-3 text-sm">
+                <p><strong>Average Mood:</strong> {insights.averageMood.toFixed(1)}/10</p>
+                <p><strong>Frequent Triggers:</strong> {insights.frequentTriggers.join(', ')}</p>
+                <div>
+                  <strong>Notable Incidents:</strong>
+                  <ul className="list-disc pl-5 mt-1 space-y-1">
+                    {insights.notableIncidents.map((note, i) => <li key={i}>{note}</li>)}
+                  </ul>
+                </div>
+            </div>
+          </CardContent>
+          <CardFooter>
+            <Button variant="outline" className="w-full" onClick={() => setShowInsights(false)}>Back to Logging</Button>
+          </CardFooter>
+        </Card>
+      </div>
      )
   }
 

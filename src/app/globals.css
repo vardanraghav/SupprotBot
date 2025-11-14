@@ -2,10 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-body {
-  font-family: 'Alegreya Sans', sans-serif;
-}
-
 @layer base {
   :root {
     --background: 220 17% 96%;
@@ -37,8 +33,6 @@ body {
 
   .dark {
     --background: 217 33% 7%; /* #0B0E14 */
-    --background-start-rgb: 11, 14, 20;
-    --background-end-rgb: 23, 20, 32;
     --foreground: 240 18% 90%; /* #E6E6EE */
     --card: 233 19% 8%; /* #11121A */
     --card-foreground: 240 18% 90%; /* #E6E6EE */
@@ -62,6 +56,15 @@ body {
     --chart-3: 30 80% 55%;
     --chart-4: 280 65% 60%;
     --chart-5: 340 75% 55%;
+
+    --bg-low-start: 1, 2, 3;
+    --bg-low-end: 21, 23, 43;
+
+    --bg-neutral-start: 11, 14, 20;
+    --bg-neutral-end: 23, 20, 32;
+
+    --bg-happy-start: 42, 30, 62;
+    --bg-happy-end: 63, 48, 63;
   }
 }
 
@@ -71,9 +74,21 @@ body {
   }
   body {
     @apply bg-background text-foreground;
+    font-family: 'Alegreya Sans', sans-serif;
   }
+
+  .theme-low {
+    background: linear-gradient(160deg, rgb(var(--bg-low-start)) 0%, rgb(var(--bg-low-end)) 100%);
+  }
+  .theme-neutral {
+    background: linear-gradient(160deg, rgb(var(--bg-neutral-start)) 0%, rgb(var(--bg-neutral-end)) 100%);
+  }
+  .theme-happy {
+    background: linear-gradient(160deg, rgb(var(--bg-happy-start)) 0%, rgb(var(--bg-happy-end)) 100%);
+  }
+
   .dark body {
-    background: linear-gradient(160deg, rgb(var(--background-start-rgb)) 0%, rgb(var(--background-end-rgb)) 100%);
+     background-color: rgb(var(--bg-neutral-start));
   }
 }
 
@@ -89,6 +104,7 @@ body {
   .glassmorphism {
     background: hsl(var(--card) / 0.5);
     backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     border-width: 1px;
     border-color: hsl(var(--border) / 0.2);
   }
@@ -96,9 +112,11 @@ body {
   @keyframes breathe {
     0%, 100% {
       transform: scale(0.6);
+      opacity: 0.7;
     }
     50% {
       transform: scale(1);
+      opacity: 1;
     }
   }
 
@@ -107,7 +125,7 @@ body {
       box-shadow: 0 0 20px 5px hsl(var(--primary) / 0);
     }
     50% {
-      box-shadow: 0 0 60px 20px hsl(var(--primary) / 0.1);
+      box-shadow: 0 0 70px 30px hsl(var(--primary) / 0.15);
     }
   }
   

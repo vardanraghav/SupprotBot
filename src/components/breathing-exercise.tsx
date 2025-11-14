@@ -1,9 +1,8 @@
 "use client";
 
 import { useState, useEffect } from 'react';
-import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/components/ui/card';
-import { cn } from '@/lib/utils';
 import { Button } from './ui/button';
+import { cn } from '@/lib/utils';
 
 const BreathingExercise = () => {
   const [phase, setPhase] = useState('Get Ready');
@@ -13,11 +12,11 @@ const BreathingExercise = () => {
     if (!isRunning) {
       setPhase('Get Ready');
       return;
-    };
+    }
 
     const phases = ['Breathe In', 'Hold', 'Breathe Out', 'Hold'];
     let currentPhaseIndex = -1;
-    
+
     // Immediately start with "Breathe In"
     currentPhaseIndex = 0;
     setPhase(phases[currentPhaseIndex]);
@@ -32,9 +31,18 @@ const BreathingExercise = () => {
 
   return (
     <div className="w-full h-full flex flex-col items-center justify-center p-4">
-      <div className={cn("w-full h-full flex flex-col items-center justify-center transition-all", isRunning && 'breathing-glow')}>
+      <div className={cn("w-full h-full flex flex-col items-center justify-center transition-all")}>
         <div className="relative flex items-center justify-center w-64 h-64">
-          <div className={cn("absolute inset-0 bg-primary/20 rounded-full transition-transform duration-1000", isRunning && "breathing-circle")}></div>
+           <div className={cn("absolute inset-0 rounded-full bg-primary/10", isRunning && 'breathing-glow')}></div>
+           <div className={cn(
+              "absolute inset-10 rounded-full bg-primary/20 transition-transform duration-1000",
+              isRunning && "breathing-circle"
+            )}></div>
+           <div className={cn(
+              "absolute inset-20 rounded-full border-2 border-primary/30",
+               isRunning && "breathing-circle opacity-50"
+            )} style={{ animationDelay: '-1s' }}></div>
+
           <div className="relative z-10 text-center">
             <p className="text-4xl font-bold font-headline text-foreground transition-opacity duration-500">
               {phase}
