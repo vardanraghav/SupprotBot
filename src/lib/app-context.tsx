@@ -1,10 +1,9 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { useCollection } from '@/firebase';
+import { useCollection } from '@/firebase/firestore/use-collection';
 import { doc, setDoc, addDoc, collection, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
-import { useFirestore } from '@/firebase';
 
 // A temporary, anonymous user ID for the session
 const TEMP_USER_ID = 'local-user';
@@ -55,6 +54,8 @@ interface AppState {
   activePage: Page;
   setActivePage: React.Dispatch<React.SetStateAction<Page>>;
   isAdmin: boolean;
+  sosEnabled: boolean;
+  setSosEnabled: React.Dispatch<React.SetStateAction<boolean>>;
   addMessage: (message: Omit<Message, 'id'>) => Message;
   addMoodEntry: (entry: Omit<MoodEntry, 'id' | 'date'>) => void;
   addJournalEntry: (entry: Omit<JournalEntry, 'id' | 'date'>) => void;
@@ -77,6 +78,7 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
   ]);
   
   const [isAdmin, setIsAdmin] = useState(false);
+  const [sosEnabled, setSosEnabled] = useState(true);
 
   const moodCollectionRef = collection(db, 'users', TEMP_USER_ID, 'moodEntries');
   const journalCollectionRef = collection(db, 'users', TEMP_USER_ID, 'journalEntries');
@@ -137,6 +139,8 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
     activePage,
     setActivePage,
     isAdmin,
+    sosEnabled,
+    setSosEnabled,
     addMessage,
     addMoodEntry,
     addJournalEntry,

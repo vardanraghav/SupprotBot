@@ -16,8 +16,11 @@ import { Button } from './ui/button';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { Switch } from './ui/switch';
 import { Label } from './ui/label';
+import { useAppState } from '@/lib/app-context';
 
 const PrivacySettings = () => {
+  const { sosEnabled, setSosEnabled } = useAppState();
+
   return (
     <Card className="bg-transparent border-0 shadow-none">
       <CardHeader>
@@ -37,10 +40,10 @@ const PrivacySettings = () => {
 
         <div className="flex items-center justify-between p-4 rounded-lg bg-background/50">
           <div className="space-y-1">
-            <Label htmlFor="sos-consent" className="font-semibold">Enable SOS Alerts</Label>
-            <p className="text-sm text-muted-foreground">Allow SupportBot to notify your emergency contacts in a crisis.</p>
+            <Label htmlFor="sos-consent" className="font-semibold">Enable 4-in-1 SOS System</Label>
+            <p className="text-sm text-muted-foreground">Allow SupportBot to monitor vitals and notify contacts in a crisis.</p>
           </div>
-          <Switch id="sos-consent" />
+          <Switch id="sos-consent" checked={sosEnabled} onCheckedChange={setSosEnabled} />
         </div>
         
         <div>

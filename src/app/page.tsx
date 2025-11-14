@@ -9,9 +9,10 @@ import { AudioPlayer } from '@/components/audio-player';
 import { GuidedAction } from '@/components/guided-action';
 import { ResourcesDialog } from '@/components/resources-dialog';
 import SettingsPage from '@/components/settings-page';
+import { VitalsMonitor } from '@/components/vitals-monitor';
 
 export default function Home() {
-  const { moodHistory, activePage } = useAppState();
+  const { moodHistory, activePage, sosEnabled } = useAppState();
 
   React.useEffect(() => {
     const getMoodTheme = () => {
@@ -45,8 +46,9 @@ export default function Home() {
       <main className="flex-1 flex flex-col overflow-hidden relative">
         {activePage === 'chat' ? (
           <>
-            <div className="absolute top-4 right-4 z-10">
+            <div className="absolute top-4 right-4 z-10 flex flex-col gap-4">
               <GuidedAction />
+              {sosEnabled && <VitalsMonitor />}
             </div>
             <ChatInterface />
           </>
