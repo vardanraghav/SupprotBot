@@ -1,13 +1,12 @@
 "use client";
 
 import * as React from 'react';
-import { Smile, Book, Wind, LifeBuoy, Settings } from 'lucide-react';
+import { Smile, Book, Wind } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from '@/components/ui/sheet';
 import MoodTracker from './mood-tracker';
 import JournalSection from './journal-section';
 import BreathingExercise from './breathing-exercise';
-import { ResourcesDialog } from './resources-dialog';
 import { cn } from '@/lib/utils';
 
 export function BottomBar() {
@@ -41,13 +40,6 @@ export function BottomBar() {
             </SheetContent>
           </Sheet>
         ))}
-
-        <ResourcesDialog />
-        
-        <Button variant="ghost" className="flex-col h-auto p-2 rounded-lg">
-          <Settings className="h-6 w-6 mb-1" />
-          <span className="text-xs">Settings</span>
-        </Button>
       </div>
     </div>
   );

@@ -8,6 +8,7 @@ import { AppStateProvider, useAppState } from '@/lib/app-context';
 import { cn } from '@/lib/utils';
 import { AudioPlayer } from '@/components/audio-player';
 import { GuidedAction } from '@/components/guided-action';
+import { ResourcesDialog } from '@/components/resources-dialog';
 
 function PageContent() {
   const { moodHistory } = useAppState();
@@ -31,7 +32,10 @@ function PageContent() {
             SupportBot
           </h1>
         </div>
-        <AudioPlayer />
+        <div className="flex items-center gap-2">
+          <AudioPlayer />
+          <ResourcesDialog />
+        </div>
       </header>
       <main className="flex-1 flex flex-col overflow-hidden relative">
         <div className="absolute top-4 right-4 z-10">
