@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Paperclip, SendHoriz, Mic, CornerDownLeft } from 'lucide-react';
+import { Paperclip, SendHorizontal, Mic, CornerDownLeft } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useAppState, Message } from '@/lib/app-context';
@@ -136,7 +136,7 @@ const ChatInterface = () => {
         </div>
         <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">
           <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
-            <SendHoriz className="h-5 w-5" />
+            <SendHorizontal className="h-5 w-5" />
           </Button>
         </div>
       </form>
