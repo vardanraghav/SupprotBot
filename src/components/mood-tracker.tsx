@@ -82,6 +82,7 @@ const MoodTracker = ({ onSave }: { onSave?: () => void }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [showInsights, setShowInsights] = useState(false);
   const [lastMoodEntry, setLastMoodEntry] = useState<any | null>(null);
+  const [isSuggestingTags, setIsSuggestingTags] = useState(false);
 
   const { toast } = useToast();
 
@@ -104,7 +105,7 @@ const MoodTracker = ({ onSave }: { onSave?: () => void }) => {
       toast({variant: "destructive", title: "Notes are empty", description: "Please write some notes to get tag suggestions."});
       return;
     }
-    setIsLoading(true);
+    setIsSuggestingTags(true);
     try {
       const {tags: suggested} = await suggestTags({text: notes});
       const newTags = [...new Set([...tags, ...suggested])];
@@ -113,7 +114,7 @@ const MoodTracker = ({ onSave }: { onSave?: () => void }) => {
     } catch(e) {
       toast({variant: "destructive", title: "Failed to suggest tags"});
     } finally {
-      setIsLoading(false);
+      setIsSuggestingTags(false);
     }
   }
 
@@ -240,7 +241,9 @@ const MoodTracker = ({ onSave }: { onSave?: () => void }) => {
               onChange={(e) => setNotes(e.target.value)}
               className="bg-background/50"
             />
-            <Button variant="outline" size="sm" onClick={handleSuggestTags} disabled={isLoading || !notes}>Suggest Tags</Button>
+            <Button variant="outline" size="sm" onClick={handleSuggestTags} disabled={isSuggestingTags || !notes}>
+              {isSuggestingTags ? 'Suggesting...' : 'Suggest Tags'}
+            </Button>
           </div>
         </CardContent>
         <CardFooter className="flex flex-col gap-4">

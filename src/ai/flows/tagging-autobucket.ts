@@ -31,7 +31,7 @@ const suggestTagsPrompt = ai.definePrompt({
   name: 'suggestTagsPrompt',
   input: {schema: SuggestTagsInputSchema},
   output: {schema: SuggestTagsOutputSchema},
-  prompt: `You are a helpful assistant that suggests tags for the given text.  The tags should be relevant to the content of the text. Return a JSON array of strings representing the tags.
+  prompt: `You are a helpful assistant that suggests relevant, single-word or two-word tags for the given text. The tags should be relevant to the content of the text, focusing on emotions, activities, or key themes. Return a JSON array of 3-5 strings representing the tags.
 
 Text: {{{text}}}`,
 });
