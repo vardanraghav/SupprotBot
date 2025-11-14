@@ -1,7 +1,7 @@
 "use client";
 
 import React, { useState, useRef, useEffect } from 'react';
-import { Paperclip, SendHorizontal, Mic, CornerDownLeft } from 'lucide-react';
+import { Paperclip, SendHorizontal } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
 import { useAppState, Message } from '@/lib/app-context';
@@ -10,6 +10,7 @@ import crisisKeywords from '@/lib/crisis_keywords.json';
 import ChatMessage from './chat-message';
 import { ScrollArea } from './ui/scroll-area';
 import { useToast } from "@/hooks/use-toast";
+import { cn } from '@/lib/utils';
 
 const CrisisMessage = () => (
     <div className="rounded-lg border-2 border-destructive bg-destructive/10 p-4 text-destructive-foreground">
@@ -35,13 +36,17 @@ const ChatInterface = () => {
   const scrollAreaRef = useRef<HTMLDivElement>(null);
   const { toast } = useToast();
 
-  useEffect(() => {
+  const scrollToBottom = () => {
     if (scrollAreaRef.current) {
       scrollAreaRef.current.scrollTo({
         top: scrollAreaRef.current.scrollHeight,
         behavior: 'smooth',
       });
     }
+  }
+
+  useEffect(() => {
+    scrollToBottom();
   }, [messages]);
 
   const checkForCrisis = (text: string): boolean => {
@@ -57,6 +62,7 @@ const ChatInterface = () => {
     const currentInput = input;
     setInput('');
     setIsLoading(true);
+    setTimeout(scrollToBottom, 100);
 
     if (checkForCrisis(currentInput)) {
       setTimeout(() => {
@@ -106,7 +112,7 @@ const ChatInterface = () => {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col h-full w-full max-w-3xl mx-auto px-4 pt-4">
       <ScrollArea className="flex-1 -mx-4" ref={scrollAreaRef}>
         <div className="px-4 space-y-6 pb-4">
           {messages.map((msg, index) =>
@@ -120,29 +126,31 @@ const ChatInterface = () => {
         </div>
       </ScrollArea>
 
-      <form onSubmit={handleSendMessage} className="relative mt-4">
-        <Textarea
-          value={input}
-          onChange={(e) => setInput(e.target.value)}
-          onKeyDown={handleKeyDown}
-          placeholder="Share what's on your mind..."
-          className="w-full resize-none pr-24 pl-10 py-3 text-base"
-          rows={1}
-        />
-        <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center">
-            <Button variant="ghost" size="icon" type="button">
-                <Paperclip className="h-5 w-5 text-muted-foreground" />
+      <div className="pb-4 mt-auto">
+        <form onSubmit={handleSendMessage} className="relative mt-4">
+          <Textarea
+            value={input}
+            onChange={(e) => setInput(e.target.value)}
+            onKeyDown={handleKeyDown}
+            placeholder="Share what's on your mind..."
+            className="w-full resize-none pr-28 pl-12 py-3 text-base rounded-full min-h-[52px] glassmorphism"
+            rows={1}
+          />
+          <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center">
+              <Button variant="ghost" size="icon" type="button" className="rounded-full">
+                  <Paperclip className="h-5 w-5 text-muted-foreground" />
+              </Button>
+          </div>
+          <div className="absolute right-2 top-1/2 -translate-y-1/2 flex items-center">
+            <Button type="submit" size="icon" disabled={isLoading || !input.trim()} className="rounded-full w-9 h-9">
+              <SendHorizontal className="h-5 w-5" />
             </Button>
-        </div>
-        <div className="absolute right-3 top-1/2 -translate-y-1/2 flex items-center">
-          <Button type="submit" size="icon" disabled={isLoading || !input.trim()}>
-            <SendHorizontal className="h-5 w-5" />
-          </Button>
-        </div>
-      </form>
-      <p className="text-xs text-muted-foreground mt-2 text-center">
-        SupportBot is an AI and may make mistakes. It is not a replacement for a therapist. In a crisis, please seek professional help.
-      </p>
+          </div>
+        </form>
+        <p className="text-xs text-muted-foreground mt-2 text-center">
+          SupportBot is an AI and may make mistakes. In a crisis, please seek professional help.
+        </p>
+      </div>
     </div>
   );
 };

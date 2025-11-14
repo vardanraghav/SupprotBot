@@ -43,12 +43,12 @@ interface AppState {
 const AppContext = createContext<AppState | undefined>(undefined);
 
 // Provider Component
-export const AppProvider = ({ children }: { children: ReactNode }) => {
+export const AppStateProvider = ({ children }: { children: ReactNode }) => {
   const [messages, setMessages] = useState<Message[]>([
     {
       id: 'welcome-1',
       role: 'assistant',
-      content: "Hello, I'm SupportBot. I'm here to listen and offer a safe space. How are you feeling today?",
+      content: "I'm SupportBot, and I'm here with you. It's a safe space to share what's on your mind. How are you feeling today?",
     }
   ]);
   const [moodHistory, setMoodHistory] = useState<MoodEntry[]>([]);
@@ -99,6 +99,17 @@ export const AppProvider = ({ children }: { children: ReactNode }) => {
 
   return <AppContext.Provider value={value}>{children}</AppContext.Provider>;
 };
+
+
+// Main App Provider Wrapper
+export const AppProvider = ({ children }: { children: ReactNode }) => {
+    return (
+        <AppStateProvider>
+            {children}
+        </AppStateProvider>
+    )
+}
+
 
 // Hook to use context
 export const useAppState = () => {

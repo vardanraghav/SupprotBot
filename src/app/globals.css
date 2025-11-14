@@ -32,11 +32,13 @@ body {
     --chart-3: 197 37% 24%;
     --chart-4: 43 74% 66%;
     --chart-5: 27 87% 67%;
-    --radius: 0.5rem;
+    --radius: 1rem; /* 16px */
   }
 
   .dark {
     --background: 217 33% 7%; /* #0B0E14 */
+    --background-start-rgb: 11, 14, 20;
+    --background-end-rgb: 23, 20, 32;
     --foreground: 240 18% 90%; /* #E6E6EE */
     --card: 233 19% 8%; /* #11121A */
     --card-foreground: 240 18% 90%; /* #E6E6EE */
@@ -52,7 +54,7 @@ body {
     --accent-foreground: 141 30% 20%;
     --destructive: 0 100% 74%; /* #FF7A7A */
     --destructive-foreground: 0 0% 10%;
-    --border: 240 4% 16%;
+    --border: 240 4% 20%;
     --input: 240 4% 16%;
     --ring: 259 100% 87%;
     --chart-1: 220 70% 50%;
@@ -70,6 +72,9 @@ body {
   body {
     @apply bg-background text-foreground;
   }
+  .dark body {
+    background: linear-gradient(160deg, rgb(var(--background-start-rgb)) 0%, rgb(var(--background-end-rgb)) 100%);
+  }
 }
 
 @layer utilities {
@@ -79,6 +84,13 @@ body {
 
   .breathing-glow {
     animation: glow 8s ease-in-out infinite;
+  }
+  
+  .glassmorphism {
+    background: hsl(var(--card) / 0.5);
+    backdrop-filter: blur(12px);
+    border-width: 1px;
+    border-color: hsl(var(--border) / 0.2);
   }
 
   @keyframes breathe {

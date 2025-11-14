@@ -62,8 +62,8 @@ const JournalSection = () => {
   };
 
   return (
-    <div className="space-y-6 h-full flex flex-col">
-      <Card>
+    <div className="space-y-6 h-full flex flex-col p-4">
+      <Card className="glassmorphism">
         <CardHeader>
           <CardTitle>Journal</CardTitle>
           <CardDescription>A private space for your thoughts.</CardDescription>
@@ -75,13 +75,14 @@ const JournalSection = () => {
               value={currentEntry}
               onChange={(e) => setCurrentEntry(e.target.value)}
               rows={5}
+              className="bg-background/50"
             />
             <Button onClick={handleSaveEntry} className="w-full">Save Entry</Button>
           </div>
         </CardContent>
       </Card>
       
-      <Card className="flex-1 flex flex-col">
+      <Card className="flex-1 flex flex-col glassmorphism">
         <CardHeader>
           <CardTitle>Weekly Summary</CardTitle>
           <CardDescription>AI-powered insights from your entries.</CardDescription>

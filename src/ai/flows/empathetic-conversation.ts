@@ -80,7 +80,7 @@ const empatheticConversationPrompt = ai.definePrompt({
     For example: "I suggested breathing because your message included 'overwhelmed' and your last mood was 3/10."
     ALWAYS mention the rationale.
   `,
-  prompt: `User: {{{userInput}}}\n\nContext: {{await provideContextTool({userInput: userInput, moodScore: moodScore, moodTags: moodTags, moodNotes: moodNotes})}}\n\nResponse:`, 
+  prompt: `User: {{{userInput}}}`, 
 });
 
 const empatheticConversationFlow = ai.defineFlow(

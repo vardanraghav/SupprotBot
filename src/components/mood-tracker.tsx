@@ -11,10 +11,15 @@ import { useToast } from "@/hooks/use-toast";
 import { getMoodInsights } from '@/ai/flows/mood-insights';
 import { suggestTags } from '@/ai/flows/tagging-autobucket';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from './ui/card';
-import { BrainCircuit, X } from 'lucide-react';
-import { Separator } from './ui/separator';
+import { BrainCircuit, X, Smile, Meh, Frown } from 'lucide-react';
 
-const MoodTracker = () => {
+const MoodEmoji = ({ mood }: { mood: number }) => {
+  if (mood > 7) return <Smile className="h-6 w-6 text-green-400" />;
+  if (mood > 4) return <Meh className="h-6 w-6 text-yellow-400" />;
+  return <Frown className="h-6 w-6 text-red-400" />;
+}
+
+const MoodTracker = ({ onSave }: { onSave?: () => void }) => {
   const { moodHistory, addMoodEntry } = useAppState();
   const [mood, setMood] = useState(5);
   const [tags, setTags] = useState<string[]>([]);
@@ -22,6 +27,7 @@ const MoodTracker = () => {
   const [notes, setNotes] = useState('');
   const [insights, setInsights] = useState<{ averageMood: number; frequentTriggers: string[]; notableIncidents: string[]; } | null>(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [showInsights, setShowInsights] = useState(false);
 
   const { toast } = useToast();
 
@@ -66,6 +72,7 @@ const MoodTracker = () => {
     setMood(5);
     setTags([]);
     setNotes('');
+    if (onSave) onSave();
   };
 
   const handleGetInsights = async () => {
@@ -78,6 +85,7 @@ const MoodTracker = () => {
     try {
       const result = await getMoodInsights({ moodHistory });
       setInsights(result);
+      setShowInsights(true);
     } catch (error) {
       console.error("Error getting mood insights:", error);
       toast({variant: "destructive", title: "Failed to get insights"});
@@ -85,17 +93,45 @@ const MoodTracker = () => {
       setIsLoading(false);
     }
   };
+  
+  if (showInsights && insights) {
+     return (
+       <Card className="glassmorphism border-none shadow-none">
+        <CardHeader>
+          <CardTitle>Weekly Insights</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-3 text-sm">
+              <p><strong>Average Mood:</strong> {insights.averageMood.toFixed(1)}/10</p>
+              <p><strong>Frequent Triggers:</strong> {insights.frequentTriggers.join(', ')}</p>
+              <div>
+                <strong>Notable Incidents:</strong>
+                <ul className="list-disc pl-5 mt-1 space-y-1">
+                  {insights.notableIncidents.map((note, i) => <li key={i}>{note}</li>)}
+                </ul>
+              </div>
+          </div>
+        </CardContent>
+        <CardFooter>
+          <Button variant="outline" className="w-full" onClick={() => setShowInsights(false)}>Back to Logging</Button>
+        </CardFooter>
+      </Card>
+     )
+  }
 
   return (
-    <div className="space-y-6">
-      <Card>
+    <div className="space-y-6 p-4">
+      <Card className="glassmorphism border-none shadow-none">
         <CardHeader>
-          <CardTitle>How are you feeling?</CardTitle>
-          <CardDescription>Log your mood for today.</CardDescription>
+          <CardTitle>How are you feeling right now?</CardTitle>
+          <CardDescription>Log your mood for this moment.</CardDescription>
         </CardHeader>
         <CardContent className="space-y-6">
-          <div className="space-y-2">
-            <label className="text-sm font-medium">Mood Score: {mood}/10</label>
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <label className="text-sm font-medium">Mood Score: {mood}/10</label>
+              <MoodEmoji mood={mood} />
+            </div>
             <Slider
               value={[mood]}
               onValueChange={(value) => setMood(value[0])}
@@ -108,9 +144,9 @@ const MoodTracker = () => {
             <label className="text-sm font-medium">Tags</label>
             <div className="flex flex-wrap gap-2">
               {tags.map(tag => (
-                <Badge key={tag} variant="secondary" className="pr-1">
+                <Badge key={tag} variant="secondary" className="pr-1 text-sm py-1">
                   {tag}
-                  <button onClick={() => removeTag(tag)} className="ml-1 rounded-full p-0.5 hover:bg-destructive/50">
+                  <button onClick={() => removeTag(tag)} className="ml-1.5 rounded-full p-0.5 hover:bg-destructive/50">
                     <X className="h-3 w-3" />
                   </button>
                 </Badge>
@@ -121,6 +157,7 @@ const MoodTracker = () => {
               value={currentTag}
               onChange={(e) => setCurrentTag(e.target.value)}
               onKeyDown={handleTagKeyDown}
+              className="bg-background/50"
             />
           </div>
 
@@ -130,41 +167,16 @@ const MoodTracker = () => {
               placeholder="Any thoughts to add?"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
+              className="bg-background/50"
             />
             <Button variant="outline" size="sm" onClick={handleSuggestTags} disabled={isLoading || !notes}>Suggest Tags</Button>
           </div>
         </CardContent>
-        <CardFooter>
-          <Button onClick={handleSubmit} className="w-full">Log Mood</Button>
-        </CardFooter>
-      </Card>
-      
-      <Card>
-        <CardHeader>
-          <CardTitle>Weekly Insights</CardTitle>
-        </CardHeader>
-        <CardContent>
-          {insights ? (
-            <div className="space-y-3 text-sm">
-                <p><strong>Average Mood:</strong> {insights.averageMood.toFixed(1)}/10</p>
-                <p><strong>Frequent Triggers:</strong> {insights.frequentTriggers.join(', ')}</p>
-                <div>
-                  <strong>Notable Incidents:</strong>
-                  <ul className="list-disc pl-5 mt-1 space-y-1">
-                    {insights.notableIncidents.map((note, i) => <li key={i}>{note}</li>)}
-                  </ul>
-                </div>
-            </div>
-          ) : (
-            <div className="text-center text-sm text-muted-foreground py-4">
-              {isLoading ? "Analyzing your week..." : "Click below to generate your weekly mood summary."}
-            </div>
-          )}
-        </CardContent>
-        <CardFooter>
-          <Button variant="secondary" className="w-full" onClick={handleGetInsights} disabled={isLoading}>
+        <CardFooter className="flex flex-col gap-4">
+          <Button onClick={handleSubmit} className="w-full" size="lg">Log Mood</Button>
+          <Button variant="ghost" className="w-full" onClick={handleGetInsights} disabled={isLoading}>
             <BrainCircuit className="mr-2 h-4 w-4" />
-            {isLoading ? 'Analyzing...' : 'Generate Insights'}
+            {isLoading ? 'Analyzing...' : 'Generate Weekly Insights'}
           </Button>
         </CardFooter>
       </Card>
