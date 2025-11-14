@@ -29,11 +29,11 @@ type LoginValues = z.infer<typeof loginSchema>;
 type RegisterValues = z.infer<typeof registerSchema>;
 
 const getFirebaseErrorMessage = (error: any) => {
-    // Check if it's a Firebase error by looking for the 'code' property
     if (error && error.code) {
         switch (error.code) {
             case 'auth/user-not-found':
-                return 'No account found with this email address.';
+            case 'auth/invalid-credential':
+                return 'No account found with this email or password.';
             case 'auth/wrong-password':
                 return 'Incorrect password. Please try again.';
             case 'auth/email-already-in-use':
@@ -66,9 +66,17 @@ const LoginPage = () => {
 
   const onLoginSubmit = async (data: LoginValues) => {
     try {
-      await signInWithEmailAndPassword(auth, data.email, data.password);
-      toast({ title: 'Login Successful', description: 'Welcome back!' });
-      router.push('/');
+      const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
+      const user = userCredential.user;
+
+      if (user.email === 'admin@supportbot.app' && data.password === '7983977176') {
+        toast({ title: 'Admin Login Successful', description: 'Welcome, Admin!' });
+        router.push('/admin');
+      } else {
+        toast({ title: 'Login Successful', description: 'Welcome back!' });
+        router.push('/');
+      }
+
     } catch (error: any) {
       console.error("Login error:", error.code, error.message);
       toast({
@@ -83,8 +91,15 @@ const LoginPage = () => {
     try {
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       await updateProfile(userCredential.user, { displayName: data.name });
-      toast({ title: 'Registration Successful', description: 'Welcome to SupportBot!' });
-      router.push('/');
+      
+      if (data.email === 'admin@supportbot.app' && data.password === '7983977176') {
+        toast({ title: 'Admin Registration Successful', description: 'Welcome, Admin!' });
+        router.push('/admin');
+      } else {
+        toast({ title: 'Registration Successful', description: 'Welcome to SupportBot!' });
+        router.push('/');
+      }
+
     } catch (error: any) {
       console.error("Signup error:", error.code, error.message);
       toast({
