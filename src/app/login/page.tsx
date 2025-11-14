@@ -13,6 +13,7 @@ import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, up
 import { useFirebaseApp } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { Logo } from '@/components/icons/logo';
+import { Form, FormControl, FormField, FormItem, FormLabel, FormMessage } from '@/components/ui/form';
 
 const loginSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -58,10 +59,12 @@ const LoginPage = () => {
 
   const loginForm = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
+    defaultValues: { email: '', password: '' },
   });
 
   const registerForm = useForm<RegisterValues>({
     resolver: zodResolver(registerSchema),
+    defaultValues: { name: '', email: '', password: '' },
   });
 
   const onLoginSubmit = async (data: LoginValues) => {
@@ -95,4 +98,122 @@ const LoginPage = () => {
       toast({ title: 'Registration Successful', description: 'Welcome to SupportBot!' });
       router.push('/');
 
-    } catch (error: any
+    } catch (error: any) {
+        console.error("Registration error:", error.code, error.message);
+        toast({
+            variant: 'destructive',
+            title: 'Registration Failed',
+            description: getFirebaseErrorMessage(error),
+        });
+    }
+  };
+
+  return (
+    <div className="flex min-h-dvh flex-col items-center justify-center bg-transparent p-4">
+       <div className="absolute top-8 flex items-center gap-3">
+            <div className="h-9 w-9 rounded-full bg-primary/20 border-2 border-primary/50 flex items-center justify-center">
+                <Logo className="h-5 w-5 text-primary" />
+            </div>
+            <h1 className="font-headline text-xl font-semibold text-foreground">
+                SupportBot
+            </h1>
+        </div>
+      <Card className="w-full max-w-md glassmorphism">
+        <CardHeader>
+          <CardTitle>{isLoginView ? 'Welcome Back' : 'Create an Account'}</CardTitle>
+          <CardDescription>
+            {isLoginView ? 'Log in to continue your wellness journey.' : 'Join us to start your path to wellness.'}
+          </CardDescription>
+        </CardHeader>
+        <CardContent>
+          {isLoginView ? (
+            <Form {...loginForm}>
+              <form onSubmit={loginForm.handleSubmit(onLoginSubmit)} className="space-y-4">
+                <FormField
+                  control={loginForm.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="you@example.com" {...field} className="bg-background/50" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={loginForm.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="••••••••" {...field} className="bg-background/50" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="w-full">Log In</Button>
+              </form>
+            </Form>
+          ) : (
+            <Form {...registerForm}>
+              <form onSubmit={registerForm.handleSubmit(onRegisterSubmit)} className="space-y-4">
+                <FormField
+                  control={registerForm.control}
+                  name="name"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Full Name</FormLabel>
+                      <FormControl>
+                        <Input placeholder="Your Name" {...field} className="bg-background/50" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={registerForm.control}
+                  name="email"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Email</FormLabel>
+                      <FormControl>
+                        <Input placeholder="you@example.com" {...field} className="bg-background/50" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <FormField
+                  control={registerForm.control}
+                  name="password"
+                  render={({ field }) => (
+                    <FormItem>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input type="password" placeholder="••••••••" {...field} className="bg-background/50" />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button type="submit" className="w-full">Create Account</Button>
+              </form>
+            </Form>
+          )}
+          <div className="mt-4 text-center text-sm">
+            {isLoginView ? "Don't have an account? " : "Already have an account? "}
+            <Button variant="link" onClick={() => setIsLoginView(!isLoginView)} className="p-0 h-auto">
+              {isLoginView ? 'Sign up' : 'Log in'}
+            </Button>
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+};
+
+export default LoginPage;
