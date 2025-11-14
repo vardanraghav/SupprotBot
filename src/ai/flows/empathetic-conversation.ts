@@ -118,7 +118,10 @@ Example style:
 "I'm sorry you're feeling this heavy. It makes sense that you feel overwhelmed after everything you're handling. You're not alone here. Would you like to share what has been weighing on your heart today?"
 
 Always respond like a compassionate friend.`,
-  prompt: `User: {{{userInput}}}`, 
+  prompt: `User: {{{userInput}}}`,
+  config: {
+    retries: 3,
+  },
 });
 
 const empatheticConversationFlow = ai.defineFlow(
