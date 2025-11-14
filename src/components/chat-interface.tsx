@@ -139,7 +139,7 @@ const ChatInterface = () => {
             onChange={(e) => setInput(e.target.value)}
             onKeyDown={handleKeyDown}
             placeholder="Share what's on your mind..."
-            className="w-full resize-none pr-28 pl-12 py-3 text-base rounded-full min-h-[52px] glassmorphism"
+            className="w-full resize-none pr-28 pl-12 py-3 text-base rounded-full min-h-[52px] bg-white/50"
             rows={1}
           />
           <div className="absolute left-3 top-1/2 -translate-y-1/2 flex items-center">

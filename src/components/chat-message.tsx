@@ -26,9 +26,9 @@ const ChatMessage = ({ message, isLoading = false }: ChatMessageProps) => {
 
   if (isLoading) {
     return (
-      <div className="flex items-start gap-3 animate-pulse">
+      <div className="flex items-start gap-3">
         <Avatar className="h-9 w-9 border-2 border-primary/50">
-            <div className="bg-primary/20 flex items-center justify-center h-full w-full">
+            <div className="bg-primary/10 flex items-center justify-center h-full w-full">
               <Logo className="h-5 w-5 text-primary" />
             </div>
           </Avatar>
@@ -62,7 +62,7 @@ const ChatMessage = ({ message, isLoading = false }: ChatMessageProps) => {
     <div className={cn('flex items-start gap-3 w-full', isUser && 'justify-end')}>
       {!isUser && (
         <Avatar className="h-9 w-9 border-2 border-primary/50">
-           <div className="bg-primary/20 flex items-center justify-center h-full w-full">
+           <div className="bg-primary/10 flex items-center justify-center h-full w-full">
               <Logo className="h-5 w-5 text-primary" />
             </div>
           <AvatarFallback>SB</AvatarFallback>
@@ -77,7 +77,7 @@ const ChatMessage = ({ message, isLoading = false }: ChatMessageProps) => {
         <div
           className={cn(
             'rounded-2xl p-3 px-4 text-foreground/90 transition-all duration-300',
-            isUser ? 'bg-primary text-primary-foreground rounded-br-md' : 'bg-card rounded-bl-md glassmorphism'
+            isUser ? 'bg-primary text-primary-foreground rounded-br-md' : 'bg-background/60 rounded-bl-md glassmorphism'
           )}
         >
           <p className="whitespace-pre-wrap">{message.content}</p>
@@ -92,7 +92,7 @@ const ChatMessage = ({ message, isLoading = false }: ChatMessageProps) => {
               </Button>
             </CollapsibleTrigger>
             <CollapsibleContent>
-              <p className="text-xs text-muted-foreground p-2 bg-card/80 glassmorphism rounded-md mt-1">
+              <p className="text-xs text-muted-foreground p-2 bg-background/50 glassmorphism rounded-md mt-1">
                 <strong>Rationale:</strong> {message.rationale}
               </p>
             </CollapsibleContent>
@@ -107,10 +107,10 @@ const ChatMessage = ({ message, isLoading = false }: ChatMessageProps) => {
             {message.isHelpful === undefined ? (
               <>
                 <p className="text-xs text-muted-foreground">Was this helpful?</p>
-                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full hover:bg-accent/50" onClick={() => handleFeedback(true)}>
+                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full hover:bg-accent/20" onClick={() => handleFeedback(true)}>
                   <ThumbsUp className="h-4 w-4" />
                 </Button>
-                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full hover:bg-destructive/20" onClick={() => handleFeedback(false)}>
+                <Button variant="ghost" size="icon" className="h-7 w-7 rounded-full hover:bg-destructive/10" onClick={() => handleFeedback(false)}>
                   <ThumbsDown className="h-4 w-4" />
                 </Button>
               </>
@@ -122,8 +122,8 @@ const ChatMessage = ({ message, isLoading = false }: ChatMessageProps) => {
       </div>
 
        {isUser && (
-        <Avatar className="h-9 w-9">
-          <AvatarFallback>You</AvatarFallback>
+        <Avatar className="h-9 w-9 bg-muted">
+          <AvatarFallback className="bg-transparent text-muted-foreground">You</AvatarFallback>
         </Avatar>
       )}
     </div>

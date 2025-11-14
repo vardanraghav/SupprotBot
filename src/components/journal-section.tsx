@@ -63,7 +63,7 @@ const JournalSection = () => {
 
   return (
     <div className="space-y-6 h-full flex flex-col p-4">
-      <Card className="glassmorphism">
+      <Card className="bg-transparent border-none shadow-none">
         <CardHeader>
           <CardTitle>Journal</CardTitle>
           <CardDescription>A private space for your thoughts.</CardDescription>
@@ -82,14 +82,14 @@ const JournalSection = () => {
         </CardContent>
       </Card>
       
-      <Card className="flex-1 flex flex-col glassmorphism">
+      <Card className="flex-1 flex flex-col bg-transparent border-none shadow-none">
         <CardHeader>
           <CardTitle>Weekly Summary</CardTitle>
           <CardDescription>AI-powered insights from your entries.</CardDescription>
         </CardHeader>
         <CardContent className="flex-1">
           {summary ? (
-            <div className="space-y-2 text-sm p-3 bg-secondary/50 rounded-md">
+            <div className="space-y-2 text-sm p-3 bg-background/50 rounded-md">
                {summary.split('\n').map((line, index) => (
                 <p key={index}>{line}</p>
                ))}

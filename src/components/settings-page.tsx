@@ -10,7 +10,7 @@ const SettingsPage = () => {
     <ScrollArea className="h-full">
       <div className="p-4 space-y-6">
         <EmergencyContacts />
-        <Card className="glassmorphism">
+        <Card className="bg-transparent border-0 shadow-none">
             <CardHeader>
                 <CardTitle>Notifications</CardTitle>
                 <CardDescription>Manage how you receive alerts.</CardDescription>
@@ -19,7 +19,7 @@ const SettingsPage = () => {
                 <p className="text-sm text-muted-foreground">Notification settings coming soon.</p>
             </CardContent>
         </Card>
-         <Card className="glassmorphism">
+         <Card className="bg-transparent border-0 shadow-none">
             <CardHeader>
                 <CardTitle>Privacy</CardTitle>
                 <CardDescription>Control your data and privacy.</CardDescription>

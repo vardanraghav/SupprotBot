@@ -47,7 +47,7 @@ const MoodReflectionCard = ({ moodEntry, onClose }: { moodEntry: any, onClose: (
   }, [moodEntry]);
 
   return (
-    <Card className="glassmorphism border-primary/50">
+    <Card className="glassmorphism border-primary/50 bg-transparent">
       <CardHeader>
         <CardTitle className="flex items-center gap-2">
           <Sparkles className="text-primary" />
@@ -167,7 +167,7 @@ const MoodTracker = ({ onSave }: { onSave?: () => void }) => {
   if (showInsights && insights) {
      return (
        <div className="p-4">
-        <Card className="glassmorphism border-none shadow-none">
+        <Card className="glassmorphism bg-transparent border-none shadow-none">
           <CardHeader>
             <CardTitle>Weekly Insights</CardTitle>
           </CardHeader>
@@ -193,7 +193,7 @@ const MoodTracker = ({ onSave }: { onSave?: () => void }) => {
 
   return (
     <div className="space-y-6 p-4">
-      <Card className="glassmorphism border-none shadow-none">
+      <Card className="bg-transparent border-none shadow-none">
         <CardHeader>
           <CardTitle>How are you feeling right now?</CardTitle>
           <CardDescription>Log your mood for this moment.</CardDescription>

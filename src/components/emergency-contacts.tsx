@@ -48,7 +48,7 @@ const EmergencyContacts = () => {
   };
 
   return (
-    <Card className="glassmorphism">
+    <Card className="bg-transparent border-0 shadow-none">
       <CardHeader>
         <CardTitle>Emergency Contacts</CardTitle>
         <CardDescription>Add up to 3 trusted people who can be notified in a crisis. This is a vital part of your safety plan.</CardDescription>
@@ -119,7 +119,7 @@ const EmergencyContacts = () => {
             {emergencyContacts.length > 0 ? (
                 <ul className="space-y-3">
                     {emergencyContacts.map(contact => (
-                        <li key={contact.id} className="flex items-center justify-between p-3 rounded-md bg-secondary/50">
+                        <li key={contact.id} className="flex items-center justify-between p-3 rounded-md bg-background/50">
                            <div>
                              <p className="font-semibold">{contact.name} <span className="text-xs text-muted-foreground ml-2">({contact.relationship})</span></p>
                              <p className="text-sm text-muted-foreground">{contact.phone}{contact.email && `, ${contact.email}`}</p>
