@@ -1,3 +1,4 @@
+
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
@@ -155,9 +156,15 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
 
 // Main App Provider Wrapper
 export const AppProvider = ({ children }: { children: ReactNode }) => {
+    const [isClient, setIsClient] = useState(false);
+
+    useEffect(() => {
+        setIsClient(true);
+    }, []);
+
     return (
         <AppStateProvider>
-            {children}
+            {isClient ? children : null}
         </AppStateProvider>
     )
 }
