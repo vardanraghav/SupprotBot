@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from 'react';
+import { useState, useEffect } from 'react';
 import { useForm } from 'react-hook-form';
 import { zodResolver } from '@hookform/resolvers/zod';
 import { z } from 'zod';
@@ -53,8 +53,13 @@ const getFirebaseErrorMessage = (error: any) => {
 
 const LoginPage = () => {
   const [isLoginView, setIsLoginView] = useState(true);
+  const [isClient, setIsClient] = useState(false);
   const { toast } = useToast();
   const router = useRouter();
+
+  useEffect(() => {
+    setIsClient(true);
+  }, []);
 
   const loginForm = useForm<LoginValues>({
     resolver: zodResolver(loginSchema),
@@ -106,6 +111,10 @@ const LoginPage = () => {
         });
     }
   };
+
+  if (!isClient) {
+    return <div />;
+  }
 
   return (
     <div className="flex min-h-dvh flex-col items-center justify-center bg-transparent p-4">
@@ -206,7 +215,7 @@ const LoginPage = () => {
           <div className="mt-4 text-center text-sm">
             {isLoginView ? "Don't have an account? " : "Already have an account? "}
             <Button variant="link" onClick={() => setIsLoginView(!isLoginView)} className="p-0 h-auto">
-              {isLoginView ? 'Sign up' : 'Log in'}
+              {isLoginVew ? 'Sign up' : 'Log in'}
             </Button>
           </div>
         </CardContent>
