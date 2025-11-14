@@ -69,7 +69,7 @@ const LoginPage = () => {
       const userCredential = await signInWithEmailAndPassword(auth, data.email, data.password);
       const user = userCredential.user;
 
-      if (user.email === 'admin@supportbot.app' && data.password === '7983977176') {
+      if (user.email === 'admin@supportbot.app') {
         toast({ title: 'Admin Login Successful', description: 'Welcome, Admin!' });
         router.push('/admin');
       } else {
@@ -92,7 +92,7 @@ const LoginPage = () => {
       const userCredential = await createUserWithEmailAndPassword(auth, data.email, data.password);
       await updateProfile(userCredential.user, { displayName: data.name });
       
-      if (data.email === 'admin@supportbot.app' && data.password === '7983977176') {
+      if (userCredential.user.email === 'admin@supportbot.app') {
         toast({ title: 'Admin Registration Successful', description: 'Welcome, Admin!' });
         router.push('/admin');
       } else {
