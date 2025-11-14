@@ -92,9 +92,6 @@
         "required": ["name", "relationship", "phone"]
     }
   },
-  "auth": {
-    "providers": ["password"]
-  },
   "firestore": {
     "/users/{userId}": {
       "schema": { "$ref": "#/entities/UserProfile" },

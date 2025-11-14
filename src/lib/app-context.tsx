@@ -1,10 +1,13 @@
 "use client";
 
 import React, { createContext, useContext, useState, ReactNode, useEffect } from 'react';
-import { useUser, useCollection, useDoc } from '@/firebase';
-import { doc, setDoc, addDoc, collection, deleteDoc } from 'firebase/firestore';
+import { useCollection } from '@/firebase';
+import { doc, setDoc, addDoc, collection, deleteDoc, serverTimestamp } from 'firebase/firestore';
 import { db } from '@/lib/firebase';
 import { useFirestore } from '@/firebase';
+
+// A temporary, anonymous user ID for the session
+const TEMP_USER_ID = 'local-user';
 
 // Types
 export interface Message {
@@ -73,28 +76,15 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
     }
   ]);
   
-  const { user } = useUser();
   const [isAdmin, setIsAdmin] = useState(false);
 
-  useEffect(() => {
-    if (user && user.email === 'raghavvardan123@gmail.com') {
-      setIsAdmin(true);
-      console.log("Admin logged in");
-    } else {
-      setIsAdmin(false);
-    }
-  }, [user]);
+  const moodCollectionRef = collection(db, 'users', TEMP_USER_ID, 'moodEntries');
+  const journalCollectionRef = collection(db, 'users', TEMP_USER_ID, 'journalEntries');
+  const contactsCollectionRef = collection(db, 'users', TEMP_USER_ID, 'emergencyContacts');
 
-  // Firestore-backed state
-  const { data: moodHistory = [], setData: setMoodHistory } = useCollection<MoodEntry>(
-    user ? collection(db, 'users', user.uid, 'moodEntries') : null
-  );
-  const { data: journalEntries = [], setData: setJournalEntries } = useCollection<JournalEntry>(
-    user ? collection(db, 'users', user.uid, 'journalEntries') : null
-  );
-  const { data: emergencyContacts = [], setData: setEmergencyContacts } = useCollection<EmergencyContact>(
-    user ? collection(db, 'users', user.uid, 'emergencyContacts') : null
-  );
+  const { data: moodHistory = [], setData: setMoodHistory } = useCollection<MoodEntry>(moodCollectionRef);
+  const { data: journalEntries = [], setData: setJournalEntries } = useCollection<JournalEntry>(journalCollectionRef);
+  const { data: emergencyContacts = [], setData: setEmergencyContacts } = useCollection<EmergencyContact>(contactsCollectionRef);
   
   const [activePage, setActivePage] = useState<Page>('chat');
 
@@ -105,34 +95,27 @@ export const AppStateProvider = ({ children }: { children: ReactNode }) => {
   };
   
   const addMoodEntry = (entry: Omit<MoodEntry, 'id' | 'date'>) => {
-    if (!user) return;
     const newEntry = { 
       ...entry, 
       date: new Date().toISOString() 
     };
-    const collectionRef = collection(db, 'users', user.uid, 'moodEntries');
-    addDoc(collectionRef, newEntry);
+    addDoc(moodCollectionRef, newEntry);
   };
 
   const addJournalEntry = (entry: Omit<JournalEntry, 'id' | 'date'>) => {
-     if (!user) return;
     const newEntry = { 
       ...entry, 
       date: new Date().toISOString() 
     };
-    const collectionRef = collection(db, 'users', user.uid, 'journalEntries');
-    addDoc(collectionRef, newEntry);
+    addDoc(journalCollectionRef, newEntry);
   };
 
   const addEmergencyContact = (contact: Omit<EmergencyContact, 'id'>) => {
-    if (!user) return;
-    const collectionRef = collection(db, 'users', user.uid, 'emergencyContacts');
-    addDoc(collectionRef, contact);
+    addDoc(contactsCollectionRef, contact);
   };
 
   const removeEmergencyContact = (contactId: string) => {
-    if (!user) return;
-    const docRef = doc(db, 'users', user.uid, 'emergencyContacts', contactId);
+    const docRef = doc(db, 'users', TEMP_USER_ID, 'emergencyContacts', contactId);
     deleteDoc(docRef);
   }
   

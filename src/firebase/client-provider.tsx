@@ -2,15 +2,15 @@
 
 import { FirebaseProvider, initializeFirebase } from '.';
 
-const { firebaseApp, firestore, auth } = initializeFirebase();
+const { firebaseApp, firestore } = initializeFirebase();
 
 /**
- * Provides the Firebase app, Firestore, and Auth instances to the component tree.
+ * Provides the Firebase app and Firestore instances to the component tree.
  * This ensures that Firebase is initialized only once on the client.
  */
 export function FirebaseClientProvider({ children }: { children: React.ReactNode }) {
   return (
-    <FirebaseProvider firebaseApp={firebaseApp} firestore={firestore} auth={auth}>
+    <FirebaseProvider firebaseApp={firebaseApp} firestore={firestore}>
       {children}
     </FirebaseProvider>
   );

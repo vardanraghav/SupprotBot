@@ -9,14 +9,17 @@ import { FirebaseErrorListener } from '@/components/FirebaseErrorListener';
 type FirebaseContextValue = {
   firebaseApp: FirebaseApp;
   firestore: Firestore;
-  auth: Auth;
+  auth?: Auth; // Auth is now optional
 };
 
 const FirebaseContext = createContext<FirebaseContextValue | undefined>(undefined);
 
 type FirebaseProviderProps = {
   children: React.ReactNode;
-} & FirebaseContextValue;
+  firebaseApp: FirebaseApp;
+  firestore: Firestore;
+  auth?: Auth;
+};
 
 export function FirebaseProvider({
   children,
@@ -51,6 +54,9 @@ export function useFirebaseApp() {
 export function useFirestore() {
   return useFirebase().firestore;
 }
+
+// useAuth is no longer used and can be removed if desired.
+// Keeping it but making it potentially return undefined.
 export function useAuth() {
   return useFirebase().auth;
 }
