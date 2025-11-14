@@ -136,7 +136,7 @@ const LoginPage = () => {
                     <FormItem>
                       <FormLabel>Email</FormLabel>
                       <FormControl>
-                        <Input placeholder="you@example.com" {...field} className="bg-background/50" />
+                        <Input placeholder="admin@supportbot.app" {...field} className="bg-background/50" />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
