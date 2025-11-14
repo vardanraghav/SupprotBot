@@ -2,32 +2,34 @@
 
 import React from 'react';
 import EmergencyContacts from './emergency-contacts';
+import NotificationSettings from './notification-settings';
+import PrivacySettings from './privacy-settings';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
 import { ScrollArea } from './ui/scroll-area';
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Users, Bell, Shield } from 'lucide-react';
+
 
 const SettingsPage = () => {
   return (
     <ScrollArea className="h-full">
       <div className="p-4 space-y-6">
-        <EmergencyContacts />
-        <Card className="bg-transparent border-0 shadow-none">
-            <CardHeader>
-                <CardTitle>Notifications</CardTitle>
-                <CardDescription>Manage how you receive alerts.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <p className="text-sm text-muted-foreground">Notification settings coming soon.</p>
-            </CardContent>
-        </Card>
-         <Card className="bg-transparent border-0 shadow-none">
-            <CardHeader>
-                <CardTitle>Privacy</CardTitle>
-                <CardDescription>Control your data and privacy.</CardDescription>
-            </CardHeader>
-            <CardContent>
-                <p className="text-sm text-muted-foreground">Privacy settings coming soon.</p>
-            </CardContent>
-        </Card>
+         <Tabs defaultValue="contacts" className="w-full">
+          <TabsList className="grid w-full grid-cols-3">
+            <TabsTrigger value="contacts"><Users className="h-4 w-4 mr-2"/>Contacts</TabsTrigger>
+            <TabsTrigger value="notifications"><Bell className="h-4 w-4 mr-2"/>Notifications</TabsTrigger>
+            <TabsTrigger value="privacy"><Shield className="h-4 w-4 mr-2"/>Privacy</TabsTrigger>
+          </TabsList>
+          <TabsContent value="contacts">
+            <EmergencyContacts />
+          </TabsContent>
+          <TabsContent value="notifications">
+            <NotificationSettings />
+          </TabsContent>
+          <TabsContent value="privacy">
+            <PrivacySettings />
+          </TabsContent>
+        </Tabs>
       </div>
     </ScrollArea>
   );
