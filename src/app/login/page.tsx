@@ -9,7 +9,7 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { useToast } from '@/hooks/use-toast';
-import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile, FirebaseError } from 'firebase/auth';
+import { getAuth, createUserWithEmailAndPassword, signInWithEmailAndPassword, updateProfile } from 'firebase/auth';
 import { useFirebaseApp } from '@/firebase';
 import { useRouter } from 'next/navigation';
 import { Logo } from '@/components/icons/logo';
@@ -29,7 +29,8 @@ type LoginValues = z.infer<typeof loginSchema>;
 type RegisterValues = z.infer<typeof registerSchema>;
 
 const getFirebaseErrorMessage = (error: any) => {
-    if (error instanceof FirebaseError) {
+    // Check if it's a Firebase error by looking for the 'code' property
+    if (error && error.code) {
         switch (error.code) {
             case 'auth/user-not-found':
                 return 'No account found with this email address.';
