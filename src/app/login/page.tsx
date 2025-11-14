@@ -43,6 +43,8 @@ const getFirebaseErrorMessage = (error: any) => {
                 return 'The password is too weak. Please use at least 6 characters.';
             case 'auth/invalid-email':
                 return 'Please enter a valid email address.';
+            case 'auth/configuration-not-found':
+                return 'Firebase configuration is missing. Please check your environment variables.';
             default:
                 return error.message;
         }
